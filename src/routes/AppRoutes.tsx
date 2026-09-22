@@ -12,7 +12,7 @@ import Payments from '../pages/Payments';
 import Progress from '../pages/Progress';
 import Students from '../pages/Students';
 import Settings from '../pages/Settings';
-
+import AdminSecurity from '../pages/AdminSecurity';
 export default function AppRoutes() {
   return (
     <BrowserRouter>
@@ -31,6 +31,7 @@ export default function AppRoutes() {
             <Route path="payments" element={<Payments />} />
             <Route path="progress" element={<Progress />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="security" element={<AdminSecurity />} />
           </Route>
         </Route>
 
