@@ -54,13 +54,27 @@ export interface Lesson {
   courseId: Id;
   title: string;
   description: string;
+  videoSource: 'upload' | 'url';
   videoUrl: string;
+  videoPublicId?: string;
   duration: string;
   order: number;
+  isPreview?: boolean;
   createdAt?: string;
 }
 
-export type LessonInput = Pick<Lesson, 'courseId' | 'title' | 'description' | 'videoUrl' | 'duration' | 'order'>;
+export type LessonInput = Pick<
+  Lesson,
+  | 'courseId'
+  | 'title'
+  | 'description'
+  | 'videoSource'
+  | 'videoUrl'
+  | 'videoPublicId'
+  | 'duration'
+  | 'order'
+  | 'isPreview'
+>;
 
 export interface Enrollment {
   _id?: Id;
@@ -96,4 +110,5 @@ export interface LoginResponse {
   user: User;
 }
 
-export const entityId = (entity: { _id?: string; id?: string }) => entity.id ?? entity._id ?? '';
+export const entityId = (entity: { _id?: string; id?: string }) =>
+  entity.id ?? entity._id ?? '';
