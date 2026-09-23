@@ -45,22 +45,60 @@ function growth(dates: (string | undefined)[], selection: DateSelection): string
   return previous ? `${Math.round((current - previous) / previous * 100)}% vs previous period` : 'No previous period data';
 }
 
-function GrowthChart({ dates, selection }: { dates: string[]; selection: DateSelection }) {
+function chartRange(dates: string[], selection: DateSelection) {
   const bounds = dateBounds(selection);
   const end = bounds.end ?? new Date();
   const start = bounds.start ?? new Date(Math.min(...dates.map((date) => new Date(date).getTime())));
   const span = Math.max(1, end.getTime() - start.getTime());
+  return { start, span };
+}
+
+function GrowthChart({ dates, selection }: { dates: string[]; selection: DateSelection }) {
+  const { start, span } = chartRange(dates, selection);
   const buckets = Array.from({ length: 7 }, (_, index) => {
     const from = start.getTime() + span * index / 7, to = start.getTime() + span * (index + 1) / 7;
     return { label: new Date(from).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }), value: dates.filter((date) => { const time = new Date(date).getTime(); return time >= from && time < to; }).length };
   });
-  const max = Math.max(1, ...buckets.map((item) => item.value));
-  const points = buckets.map((item, index) => `${42 + index * 88},${178 - item.value / max * 135}`).join(' ');
+  const max = Math.max(3, ...buckets.map((item) => item.value));
+  const points = buckets.map((item, index) => `${48 + index * 90},${174 - item.value / max * 126}`).join(' ');
   return <div className="growth-chart"><svg viewBox="0 0 620 215" role="img" aria-label={`Student registrations: ${buckets.map((item) => `${item.label} ${item.value}`).join(', ')}`}>
-    {[0, 1, 2, 3].map((tick) => <g key={tick}><line x1="42" x2="602" y1={178 - tick * 45} y2={178 - tick * 45} stroke="#e6eaf1" /><text x="5" y={182 - tick * 45} className="chart-axis">{Math.round(max * tick / 3)}</text></g>)}
-    <polyline points={points} fill="none" stroke="#6257e8" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />
-    {buckets.map((item, index) => <g key={index}><circle cx={42 + index * 88} cy={178 - item.value / max * 135} r="5" fill="#fff" stroke="#6257e8" strokeWidth="3"><title>{item.label}: {item.value} registrations</title></circle><text x={42 + index * 88} y="204" textAnchor="middle" className="chart-axis">{item.label}</text></g>)}
+    <defs><linearGradient id="studentArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#109a94" stopOpacity=".24" /><stop offset="100%" stopColor="#109a94" stopOpacity="0" /></linearGradient></defs>
+    {[0, 1, 2, 3].map((tick) => <g key={tick}><line x1="48" x2="588" y1={174 - tick * 42} y2={174 - tick * 42} className="chart-grid-line" /><text x="35" y={178 - tick * 42} textAnchor="end" className="chart-axis">{Math.round(max * tick / 3)}</text></g>)}
+    <polygon points={`48,174 ${points} 588,174`} fill="url(#studentArea)" />
+    <polyline points={points} className="student-chart-line" />
+    {buckets.map((item, index) => <g key={index}><circle cx={48 + index * 90} cy={174 - item.value / max * 126} r="5" className="student-chart-point"><title>{item.label}: {item.value} registrations</title></circle><text x={48 + index * 90} y="204" textAnchor="middle" className="chart-axis">{item.label}</text></g>)}
   </svg></div>;
+}
+
+function RevenueChart({ payments, selection }: { payments: PaymentRecord[]; selection: DateSelection }) {
+  const datedPayments = payments
+    .filter((payment) => payment.status === 'SUCCESS' || payment.status === 'PARTIALLY_REFUNDED')
+    .map((payment) => ({
+      date: payment.paidAt ?? payment.createdAt,
+      amount: Math.max(0, Number(payment.amount) - Number(payment.refundedAmount ?? 0)),
+    }))
+    .filter((payment): payment is { date: string; amount: number } => Boolean(payment.date) && inDateRange(payment.date, selection));
+  const { start, span } = chartRange(datedPayments.map((payment) => payment.date), selection);
+  const buckets = Array.from({ length: 7 }, (_, index) => {
+    const from = start.getTime() + span * index / 7;
+    const to = start.getTime() + span * (index + 1) / 7;
+    return {
+      label: new Date(from).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
+      value: datedPayments.filter((payment) => { const time = new Date(payment.date).getTime(); return time >= from && time < to; }).reduce((sum, payment) => sum + payment.amount, 0),
+    };
+  });
+  const max = Math.max(1, ...buckets.map((item) => item.value));
+  const total = datedPayments.reduce((sum, payment) => sum + payment.amount, 0);
+  const formatAxis = (value: number) => value >= 100000 ? `₹${(value / 100000).toFixed(1)}L` : value >= 1000 ? `₹${Math.round(value / 1000)}k` : `₹${Math.round(value)}`;
+
+  return <div className="revenue-chart">
+    <div className="chart-summary"><div><span>Net revenue</span><strong>₹{total.toLocaleString('en-IN')}</strong></div><small>{datedPayments.length} successful payment{datedPayments.length === 1 ? '' : 's'}</small></div>
+    <svg viewBox="0 0 620 215" role="img" aria-label={`Revenue: ${buckets.map((item) => `${item.label} ₹${item.value}`).join(', ')}`}>
+      <defs><linearGradient id="revenueBars" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#f0a33a" /><stop offset="100%" stopColor="#dc7b24" /></linearGradient></defs>
+      {[0, 1, 2, 3].map((tick) => <g key={tick}><line x1="55" x2="590" y1={174 - tick * 42} y2={174 - tick * 42} className="chart-grid-line" /><text x="43" y={178 - tick * 42} textAnchor="end" className="chart-axis">{formatAxis(max * tick / 3)}</text></g>)}
+      {buckets.map((item, index) => { const height = item.value ? Math.max(5, item.value / max * 126) : 2; return <g key={index}><rect x={67 + index * 75} y={174 - height} width="42" height={height} rx="8" fill="url(#revenueBars)"><title>{item.label}: ₹{item.value.toLocaleString('en-IN')}</title></rect><text x={88 + index * 75} y="204" textAnchor="middle" className="chart-axis">{item.label}</text></g>; })}
+    </svg>
+  </div>;
 }
 
 export default function Dashboard() {
@@ -272,6 +310,13 @@ helper={`${data!.revenue.totalPayments} successful payments`}
       </div>
     </div>
 
+    {data!.payments.some((payment) =>
+      Boolean(payment.paidAt ?? payment.createdAt) &&
+      (payment.status === 'SUCCESS' || payment.status === 'PARTIALLY_REFUNDED') &&
+      inDateRange(payment.paidAt ?? payment.createdAt, selection)
+    ) ? (
+      <RevenueChart payments={data!.payments} selection={selection} />
+    ) : (
     <div className="chart-empty">
       <strong
         style={{
@@ -286,6 +331,7 @@ helper={`${data!.revenue.totalPayments} successful payments`}
         {data!.revenue.totalPayments} successful payments
       </span>
     </div>
+    )}
   </article>
 </section>
     <section className="data-grid"><article className="panel data-card"><div className="panel-head"><div><span className="eyebrow dark">LATEST</span><h2>Recent enrollments</h2></div><Link className="text-link" to="/enrollments">View all →</Link></div><div className="panel-search"><input aria-label="Search recent enrollments" placeholder="Search student or course" value={query} onChange={(event) => setQuery(event.target.value)} /></div>{recent.length ? <div className="dashboard-table-wrap"><table className="dashboard-table"><thead><tr><th>Student</th><th>Course</th><th>Date</th><th>Payment</th></tr></thead><tbody>{recent.map((item) => <tr key={entityId(item)}><td><strong>{view.userMap.get(item.userId)?.name ?? 'Student unavailable'}</strong></td><td>{view.courseMap.get(item.courseId)?.title ?? 'Course unavailable'}</td><td>{dateText(enrollmentDate(item))}</td>
