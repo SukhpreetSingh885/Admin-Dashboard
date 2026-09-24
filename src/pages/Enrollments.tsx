@@ -41,24 +41,10 @@ type PaymentRecord = {
   stripePaymentIntentId?: string;
   paidAt?: string;
   createdAt?: string;
-  refundedAmount?: number;
-  refundedAt?: string;
 };
 
 const csvCell = (value: string) =>
   `"${value.replaceAll('"', '""')}"`;
-
-const getNetPaymentAmount = (
-  payment: PaymentRecord,
-) => {
-  const refundedAmount =
-    Number(payment.refundedAmount ?? 0);
-
-  return Math.max(
-    0,
-    Number(payment.amount) - refundedAmount,
-  );
-};
 
 export default function Enrollments() {
   const [data, setData] = useState<{
@@ -138,7 +124,7 @@ export default function Enrollments() {
    * Payments are returned newest first.
    *
    * If there are multiple payment attempts for the
-   * same student/course, prefer an actual paid/refunded
+   * same student/course, prefer an actual paid
    * transaction over pending or failed attempts.
    */
   const payments = useMemo(() => {
@@ -146,11 +132,7 @@ export default function Enrollments() {
       new Map<string, PaymentRecord>();
 
     const completedStatuses =
-      new Set([
-        'SUCCESS',
-        'PARTIALLY_REFUNDED',
-        'REFUNDED',
-      ]);
+      new Set(['SUCCESS']);
 
     for (
       const payment of data?.payments ?? []
@@ -254,26 +236,11 @@ export default function Enrollments() {
         'Enrollment status',
         'Payment status',
         'Amount',
-        'Refunded amount',
-        'Net amount',
       ],
 
       ...filtered.map((item) => {
         const payment =
           getPayment(item);
-
-        const refundedAmount =
-          Number(
-            payment?.refundedAmount ??
-              0,
-          );
-
-        const netAmount =
-          payment
-            ? getNetPaymentAmount(
-                payment,
-              )
-            : 0;
 
         return [
           users.get(item.userId)
@@ -294,14 +261,6 @@ export default function Enrollments() {
 
           payment
             ? `₹${payment.amount}`
-            : '',
-
-          payment
-            ? `₹${refundedAmount}`
-            : '',
-
-          payment
-            ? `₹${netAmount}`
             : '',
         ];
       }),
@@ -463,79 +422,6 @@ export default function Enrollments() {
                 }}
               >
                 Paid
-              </span>
-            </div>
-          );
-        }
-
-        if (
-          payment.status ===
-          'PARTIALLY_REFUNDED'
-        ) {
-          const refundedAmount =
-            Number(
-              payment.refundedAmount ??
-                0,
-            );
-
-          const netAmount =
-            getNetPaymentAmount(
-              payment,
-            );
-
-          return (
-            <div className="primary-cell">
-              <strong>
-                ₹
-                {netAmount.toLocaleString(
-                  'en-IN',
-                )}
-              </strong>
-
-              <span
-                style={{
-                  fontSize: '12px',
-                  color: '#667085',
-                  marginTop: '2px',
-                }}
-              >
-                Refunded ₹
-                {refundedAmount.toLocaleString(
-                  'en-IN',
-                )}
-              </span>
-
-              <span
-                className="status pending"
-                style={{
-                  marginTop: '4px',
-                  width: 'fit-content',
-                }}
-              >
-                Partially Refunded
-              </span>
-            </div>
-          );
-        }
-
-        if (
-          payment.status ===
-          'REFUNDED'
-        ) {
-          return (
-            <div className="primary-cell">
-              <strong>
-                ₹0
-              </strong>
-
-              <span
-                className="status unavailable"
-                style={{
-                  marginTop: '4px',
-                  width: 'fit-content',
-                }}
-              >
-                Refunded
               </span>
             </div>
           );

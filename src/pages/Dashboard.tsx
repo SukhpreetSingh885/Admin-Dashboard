@@ -17,8 +17,6 @@ type PaymentRecord = {
   stripePaymentIntentId?: string;
   paidAt?: string;
   createdAt?: string;
-  refundedAmount?: number;
-  refundedAt?: string;
 };
 type RevenueSummary = {
   totalRevenue: number;
@@ -72,10 +70,10 @@ function GrowthChart({ dates, selection }: { dates: string[]; selection: DateSel
 
 function RevenueChart({ payments, selection }: { payments: PaymentRecord[]; selection: DateSelection }) {
   const datedPayments = payments
-    .filter((payment) => payment.status === 'SUCCESS' || payment.status === 'PARTIALLY_REFUNDED')
+    .filter((payment) => payment.status === 'SUCCESS')
     .map((payment) => ({
       date: payment.paidAt ?? payment.createdAt,
-      amount: Math.max(0, Number(payment.amount) - Number(payment.refundedAmount ?? 0)),
+      amount: Number(payment.amount),
     }))
     .filter((payment): payment is { date: string; amount: number } => Boolean(payment.date) && inDateRange(payment.date, selection));
   const { start, span } = chartRange(datedPayments.map((payment) => payment.date), selection);
@@ -92,7 +90,7 @@ function RevenueChart({ payments, selection }: { payments: PaymentRecord[]; sele
   const formatAxis = (value: number) => value >= 100000 ? `₹${(value / 100000).toFixed(1)}L` : value >= 1000 ? `₹${Math.round(value / 1000)}k` : `₹${Math.round(value)}`;
 
   return <div className="revenue-chart">
-    <div className="chart-summary"><div><span>Net revenue</span><strong>₹{total.toLocaleString('en-IN')}</strong></div><small>{datedPayments.length} successful payment{datedPayments.length === 1 ? '' : 's'}</small></div>
+    <div className="chart-summary"><div><span>Revenue</span><strong>₹{total.toLocaleString('en-IN')}</strong></div><small>{datedPayments.length} successful payment{datedPayments.length === 1 ? '' : 's'}</small></div>
     <svg viewBox="0 0 620 215" role="img" aria-label={`Revenue: ${buckets.map((item) => `${item.label} ₹${item.value}`).join(', ')}`}>
       <defs><linearGradient id="revenueBars" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#f0a33a" /><stop offset="100%" stopColor="#dc7b24" /></linearGradient></defs>
       {[0, 1, 2, 3].map((tick) => <g key={tick}><line x1="55" x2="590" y1={174 - tick * 42} y2={174 - tick * 42} className="chart-grid-line" /><text x="43" y={178 - tick * 42} textAnchor="end" className="chart-axis">{formatAxis(max * tick / 3)}</text></g>)}
@@ -193,24 +191,15 @@ data!.payments.forEach((payment) => {
 data!.payments
   .filter(
     (payment) =>
-      payment.status === 'SUCCESS' ||
-      payment.status === 'PARTIALLY_REFUNDED',
+      payment.status === 'SUCCESS',
   )
   .forEach((payment) => {
-    const refundedAmount =
-      Number(payment.refundedAmount ?? 0);
-
-    const netAmount = Math.max(
-      0,
-      Number(payment.amount) - refundedAmount,
-    );
-
     const current =
       courseRevenueMap.get(payment.courseId) ?? 0;
 
     courseRevenueMap.set(
       payment.courseId,
-      current + netAmount,
+      current + Number(payment.amount),
     );
   });
   return <div className="page-stack dashboard-page">
@@ -312,7 +301,7 @@ helper={`${data!.revenue.totalPayments} successful payments`}
 
     {data!.payments.some((payment) =>
       Boolean(payment.paidAt ?? payment.createdAt) &&
-      (payment.status === 'SUCCESS' || payment.status === 'PARTIALLY_REFUNDED') &&
+      payment.status === 'SUCCESS' &&
       inDateRange(payment.paidAt ?? payment.createdAt, selection)
     ) ? (
       <RevenueChart payments={data!.payments} selection={selection} />
@@ -359,33 +348,6 @@ helper={`${data!.revenue.totalPayments} successful payments`}
             Paid
           </span>
         </div>
-      );
-    }
-
-    if (payment.status === 'PARTIALLY_REFUNDED') {
-      const refunded =
-        Number(payment.refundedAmount ?? 0);
-
-      const netAmount =
-        Number(payment.amount) - refunded;
-
-      return (
-        <div className="primary-cell">
-          <strong>
-            ₹{Math.max(0, netAmount).toLocaleString('en-IN')}
-          </strong>
-          <span className="status pending">
-            Partially Refunded
-          </span>
-        </div>
-      );
-    }
-
-    if (payment.status === 'REFUNDED') {
-      return (
-        <span className="status unavailable">
-          Refunded
-        </span>
       );
     }
 

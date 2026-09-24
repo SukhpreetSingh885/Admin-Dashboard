@@ -86,24 +86,8 @@ export const adminService = {
           stripePaymentIntentId?: string;
           paidAt?: string;
           createdAt?: string;
-          refundedAmount?: number;
-          refundedAt?: string;
         }[]
       >('/admin/payments')
-    ).data;
-  },
-
-  async refundPayment(
-    paymentId: string,
-    amount?: number,
-  ) {
-    return (
-      await api.post(
-        `/admin/payments/${paymentId}/refund`,
-        amount !== undefined
-          ? { amount }
-          : {},
-      )
     ).data;
   },
 
