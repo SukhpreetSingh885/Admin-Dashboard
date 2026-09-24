@@ -8,7 +8,22 @@ import type {
   ProgressRecord,
   User,
 } from '../types';
+export type AdminNotification = {
+  _id: string;
+  recipientId: string;
+  recipientType: 'admin';
+  type: string;
+  title: string;
+  message: string;
+  read: boolean;
+  data?: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+};
 
+export type NotificationUnreadCount = {
+  count: number;
+};
 export const adminService = {
   async dashboard() {
     return (
@@ -231,6 +246,39 @@ export const adminService = {
       cloudName: string;
     }>(
       '/admin/uploads/video-signature',
+    )
+  ).data;
+},
+async notifications() {
+  return (
+    await api.get<AdminNotification[]>(
+      '/admin/notifications',
+    )
+  ).data;
+},
+
+async notificationUnreadCount() {
+  return (
+    await api.get<NotificationUnreadCount>(
+      '/admin/notifications/unread-count',
+    )
+  ).data;
+},
+
+async markNotificationRead(
+  notificationId: string,
+) {
+  return (
+    await api.patch<AdminNotification>(
+      `/admin/notifications/${notificationId}/read`,
+    )
+  ).data;
+},
+
+async markAllNotificationsRead() {
+  return (
+    await api.patch(
+      '/admin/notifications/read-all',
     )
   ).data;
 },
