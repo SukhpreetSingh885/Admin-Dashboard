@@ -42,6 +42,11 @@ const groups = [
         label: 'Payments',
       },
       {
+        to: '/withdrawals',
+        icon: '⇩',
+        label: 'Withdrawals',
+      },
+      {
         to: '/progress',
         icon: '◫',
         label: 'Progress',

@@ -13,6 +13,7 @@ import Progress from '../pages/Progress';
 import Students from '../pages/Students';
 import Settings from '../pages/Settings';
 import AdminSecurity from '../pages/AdminSecurity';
+import Withdrawals from '../pages/Withdrawals';
 export default function AppRoutes() {
   return (
     <BrowserRouter>
@@ -29,6 +30,7 @@ export default function AppRoutes() {
             <Route path="students" element={<Students />} />
             <Route path="enrollments" element={<Enrollments />} />
             <Route path="payments" element={<Payments />} />
+            <Route path="withdrawals" element={<Withdrawals />} />
             <Route path="progress" element={<Progress />} />
             <Route path="settings" element={<Settings />} />
             <Route path="security" element={<AdminSecurity />} />

@@ -1090,6 +1090,28 @@ tbody tr:hover {
   }
 }
 
+/* Withdrawal operations. */
+.withdrawals-table { min-width: 1050px; }
+.primary-cell { display: grid; gap: 3px; }
+.withdrawal-actions { display: flex; flex-wrap: wrap; gap: 7px; min-width: 150px; }
+.withdrawal-actions button { border: 0; background: #e8f7f5; color: #087f7b; border-radius: 8px; padding: 7px 9px; font: inherit; font-size: 11px; font-weight: 750; cursor: pointer; }
+.withdrawal-actions button.danger-link { color: #b33c51; background: #fff0f2; }
+.status.pending { color: #98600d; background: #fff4d6; }
+.status.processing { color: #176c9a; background: #e4f3fb; }
+.status.paid { color: #08724f; background: #dff5ea; }
+.status.failed,.status.rejected { color: #a83f55; background: #fff0f1; }
+.withdrawal-modal-backdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; background: rgba(10, 20, 38, .55); }
+.withdrawal-modal { width: min(520px, 100%); background: #fff; }
+.withdrawal-modal .modal-head { display: flex; align-items: center; justify-content: space-between; }
+.modal-close { border: 0; background: transparent; color: #526077; font-size: 26px; cursor: pointer; }
+.withdrawal-modal-body { display: grid; gap: 17px; padding: 24px 27px 27px; }
+.withdrawal-modal-body p { color: #5f6b7f; margin: 0; }
+.withdrawal-modal-body .field { display: grid; }
+.withdrawal-modal-body textarea { resize: vertical; padding: 12px; }
+.withdrawal-modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.settings-checkbox { display: flex !important; align-items: center; gap: 9px; margin-bottom: 18px; }
+.settings-checkbox input { width: 18px !important; min-height: 18px !important; }
+
 /* Keep the alternate palette above the final dashboard composition rules. */
 .main-shell {
   background:
