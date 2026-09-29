@@ -1,4 +1,5 @@
 export type Id = string;
+export type LessonCategory = 'Development' | 'Design' | 'Marketing' | 'Business' | 'AI';
 
 export interface User {
   id: Id;
@@ -54,6 +55,7 @@ export interface Lesson {
   courseId: Id;
   title: string;
   description: string;
+  category: LessonCategory;
   videoSource: 'upload' | 'url';
   videoUrl: string;
   videoPublicId?: string;
@@ -68,6 +70,7 @@ export type LessonInput = Pick<
   | 'courseId'
   | 'title'
   | 'description'
+  | 'category'
   | 'videoSource'
   | 'videoUrl'
   | 'videoPublicId'

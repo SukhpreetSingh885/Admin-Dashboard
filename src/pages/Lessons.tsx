@@ -19,9 +19,18 @@ import { lessonService } from '../services/lesson.service';
 import type {
   Course,
   Lesson,
+  LessonCategory,
   LessonInput,
 } from '../types';
 import { entityId } from '../types';
+
+const lessonCategories: LessonCategory[] = [
+  'Development',
+  'Design',
+  'Marketing',
+  'Business',
+  'AI',
+];
 
 const emptyLesson = (
   courseId: string,
@@ -29,6 +38,7 @@ const emptyLesson = (
   courseId,
   title: '',
   description: '',
+  category: 'Development',
   videoSource: 'upload',
   videoUrl: '',
   videoPublicId: undefined,
@@ -144,6 +154,8 @@ export default function Lessons() {
             title: lesson.title,
             description:
               lesson.description,
+            category:
+              lesson.category ?? 'Development',
             videoSource:
               lesson.videoSource ??
               'url',
@@ -308,6 +320,15 @@ if (editing) {
               }
             </span>
           </div>
+        ),
+      },
+      {
+        key: 'category',
+        header: 'Category',
+        render: (lesson) => (
+          <span className="category-badge">
+            {lesson.category ?? 'Development'}
+          </span>
         ),
       },
       {
@@ -497,6 +518,26 @@ if (editing) {
                     })
                   }
                 />
+              </label>
+
+              <label className="field span-2">
+                <span>Category</span>
+                <select
+                  required
+                  value={form.category}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      category: e.target.value as LessonCategory,
+                    })
+                  }
+                >
+                  {lessonCategories.map((category) => (
+                    <option value={category} key={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
               </label>
 
               <label className="field span-2">
@@ -691,20 +732,23 @@ if (editing) {
                   }
                 />
               </label>
-              <label className="field span-2">
-  <span>Free Preview</span>
-
-  <input
-    type="checkbox"
-    checked={form.isPreview ?? false}
-    onChange={(e) =>
-      setForm({
-        ...form,
-        isPreview: e.target.checked,
-      })
-    }
-  />
-</label>
+              <label className="toggle-field span-2 lesson-preview-toggle">
+                <span className="toggle-copy">
+                  <strong>Free preview</strong>
+                  <small>Let visitors watch this lesson before enrolling.</small>
+                </span>
+                <input
+                  type="checkbox"
+                  checked={form.isPreview ?? false}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      isPreview: e.target.checked,
+                    })
+                  }
+                  aria-label="Allow free lesson preview"
+                />
+              </label>
             </div>
 
             <div className="form-actions">

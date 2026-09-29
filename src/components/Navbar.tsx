@@ -13,6 +13,7 @@ import {
   adminService,
   type AdminNotification,
 } from '../services/admin.service';
+import ShellIcon from './ShellIcon';
 
 const titles: Record<string, [string, string]> = {
   '/courses': [
@@ -201,7 +202,7 @@ export default function Navbar({
           onClick={onMenu}
           aria-label="Open navigation"
         >
-          ☰
+          <ShellIcon name="menu" size={20} />
         </button>
 
         <div className="page-heading">
@@ -218,7 +219,7 @@ export default function Navbar({
           className="nav-search"
           onSubmit={submit}
         >
-          <span aria-hidden="true">⌕</span>
+          <ShellIcon name="search" size={18} />
 
           <input
             aria-label="Search courses"
@@ -228,6 +229,7 @@ export default function Navbar({
               setSearch(event.target.value)
             }
           />
+          <span className="search-shortcut" aria-hidden="true">/</span>
         </form>
 
         <div className="header-popover-wrap">
@@ -241,7 +243,7 @@ export default function Navbar({
             }`}
             aria-expanded={notificationsOpen}
           >
-            ♧
+            <ShellIcon name="bell" size={19} />
 
             {unreadCount > 0 && (
               <span className="notification-badge">
@@ -334,7 +336,7 @@ export default function Navbar({
               <small>Administrator</small>
             </span>
 
-            <span aria-hidden="true">⌄</span>
+            <span className="profile-chevron"><ShellIcon name="chevronDown" size={14} /></span>
           </button>
 
           {profile && (

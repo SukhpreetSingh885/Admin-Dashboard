@@ -161,8 +161,18 @@ export default function Settings() {
   };
 
   return (
-    <div className="settings-grid">
-      <section className="panel settings-card">
+    <div className="settings-page">
+      <div className="settings-page-intro">
+        <div>
+          <span className="eyebrow dark">ADMINISTRATION</span>
+          <h2>Workspace settings</h2>
+          <p>Manage your account, referral rewards, and payout rules.</p>
+        </div>
+        <span className="settings-saved-note">Changes apply across the academy</span>
+      </div>
+
+      <div className="settings-grid">
+      <section className="panel settings-card profile-settings-card">
         <span className="eyebrow dark">
           PROFILE
         </span>
@@ -210,28 +220,31 @@ export default function Settings() {
         {loading ? (
           <p>Loading referral settings...</p>
         ) : (
-          <form onSubmit={handleSubmit}>
-            <label htmlFor="rewardAmount">
-              Reward amount (₹)
+          <form className="settings-form" onSubmit={handleSubmit}>
+            <label className="settings-field" htmlFor="rewardAmount">
+              <span>Reward amount</span>
+              <small>Amount credited after an eligible referral.</small>
+              <span className="settings-money-input">
+                <span>₹</span>
+                <input
+                  id="rewardAmount"
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={rewardAmount}
+                  onChange={(event) => {
+                    setRewardAmount(
+                      event.target.value,
+                    );
+
+                    setError('');
+                    setSuccess('');
+                  }}
+                  disabled={saving}
+                  required
+                />
+              </span>
             </label>
-
-            <input
-              id="rewardAmount"
-              type="number"
-              min="0"
-              step="1"
-              value={rewardAmount}
-              onChange={(event) => {
-                setRewardAmount(
-                  event.target.value,
-                );
-
-                setError('');
-                setSuccess('');
-              }}
-              disabled={saving}
-              required
-            />
 
             {error ? (
               <p className="error-message">
@@ -246,6 +259,7 @@ export default function Settings() {
             ) : null}
 
             <button
+              className="button primary settings-save-button"
               type="submit"
               disabled={saving}
             >
@@ -257,7 +271,7 @@ export default function Settings() {
         )}
       </section>
 
-      <section className="panel settings-card">
+      <section className="panel settings-card withdrawal-settings-card">
         <span className="eyebrow dark">WITHDRAWALS</span>
         <h2>Withdrawal controls</h2>
         <p>Control availability and the minimum referral-wallet payout request.</p>
@@ -265,8 +279,12 @@ export default function Settings() {
         {withdrawalLoading ? (
           <p>Loading withdrawal settings...</p>
         ) : (
-          <form onSubmit={handleWithdrawalSubmit}>
-            <label className="settings-checkbox" htmlFor="withdrawalsEnabled">
+          <form className="settings-form" onSubmit={handleWithdrawalSubmit}>
+            <label className="settings-toggle" htmlFor="withdrawalsEnabled">
+              <span>
+                <strong>Accept withdrawal requests</strong>
+                <small>Students can submit eligible wallet payout requests.</small>
+              </span>
               <input
                 id="withdrawalsEnabled"
                 type="checkbox"
@@ -274,30 +292,37 @@ export default function Settings() {
                 onChange={(event) => setWithdrawalsEnabled(event.target.checked)}
                 disabled={withdrawalSaving}
               />
-              <span>Withdrawals enabled</span>
+              <i aria-hidden="true" />
             </label>
 
-            <label htmlFor="minimumWithdrawalAmount">Minimum withdrawal amount (₹)</label>
-            <input
-              id="minimumWithdrawalAmount"
-              type="number"
-              min="0"
-              step="1"
-              value={minimumWithdrawalAmount}
-              onChange={(event) => setMinimumWithdrawalAmount(event.target.value)}
-              disabled={withdrawalSaving}
-              required
-            />
+            <label className="settings-field" htmlFor="minimumWithdrawalAmount">
+              <span>Minimum withdrawal amount</span>
+              <small>Requests below this wallet balance will be unavailable.</small>
+              <span className="settings-money-input">
+                <span>₹</span>
+                <input
+                  id="minimumWithdrawalAmount"
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={minimumWithdrawalAmount}
+                  onChange={(event) => setMinimumWithdrawalAmount(event.target.value)}
+                  disabled={withdrawalSaving}
+                  required
+                />
+              </span>
+            </label>
 
             {withdrawalError ? <p className="error-message">{withdrawalError}</p> : null}
             {withdrawalSuccess ? <p className="success-message">{withdrawalSuccess}</p> : null}
 
-            <button type="submit" disabled={withdrawalSaving}>
+            <button className="button primary settings-save-button" type="submit" disabled={withdrawalSaving}>
               {withdrawalSaving ? 'Saving...' : 'Save withdrawal settings'}
             </button>
           </form>
         )}
       </section>
+      </div>
     </div>
   );
 }

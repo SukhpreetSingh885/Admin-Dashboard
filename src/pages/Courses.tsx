@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { getApiError } from '../api/axios';
-import DataTable, { type Column } from '../components/DataTable';
 import { ErrorState, LoadingState } from '../components/PageState';
 import { adminService } from '../services/admin.service';
 import { courseService } from '../services/course.service';
@@ -176,129 +175,10 @@ export default function Courses() {
     }
   };
 
-  const columns: Column<Course>[] = [
-    {
-      key: 'course',
-      header: 'Course',
-      render: (course) => (
-        <div className="course-cell">
-          {course.thumbnail ? (
-            <img
-              className="course-thumbnail"
-              src={course.thumbnail}
-              alt=""
-            />
-          ) : (
-            <div className="course-monogram">
-              {course.title
-                .slice(0, 2)
-                .toUpperCase()}
-            </div>
-          )}
-
-          <div>
-            <strong>{course.title}</strong>
-
-            <span>
-              {course.category} · {course.instructor}
-            </span>
-          </div>
-        </div>
-      ),
-    },
-
-    {
-      key: 'students',
-      header: 'Students',
-      render: (course) =>
-        counts.get(entityId(course))?.students
-          .size ?? 0,
-    },
-
-    {
-      key: 'enrollments',
-      header: 'Enrollments',
-      render: (course) =>
-        counts.get(entityId(course))
-          ?.enrollments ?? 0,
-    },
-
-    {
-      key: 'revenue',
-      header: 'Revenue',
-      render: (course) => {
-        const revenue =
-          revenueMap.get(entityId(course)) ?? 0;
-
-        return (
-          <strong>
-            ₹{revenue.toLocaleString('en-IN')}
-          </strong>
-        );
-      },
-    },
-
-    {
-      key: 'status',
-      header: 'Status',
-      render: (course) => (
-        <span
-          className={`status ${course.status}`}
-        >
-          {course.status}
-        </span>
-      ),
-    },
-
-    {
-      key: 'actions',
-      header: 'Actions',
-      className: 'actions-cell',
-      render: (course) => (
-        <div className="table-actions">
-          <button
-            disabled={
-              busy === entityId(course)
-            }
-            onClick={() =>
-              void toggle(course)
-            }
-          >
-            {course.status === 'published'
-              ? 'Unpublish'
-              : 'Publish'}
-          </button>
-
-          <button
-            onClick={() =>
-              navigate(
-                `/courses/${entityId(
-                  course,
-                )}/edit`,
-                {
-                  state: { course },
-                },
-              )
-            }
-          >
-            Edit
-          </button>
-
-          <button
-            className="danger-link"
-            disabled={
-              busy === entityId(course)
-            }
-            onClick={() =>
-              void remove(course)
-            }
-          >
-            Delete
-          </button>
-        </div>
-      ),
-    },
-  ];
+  const visibleCourses = filtered.slice(
+    (page - 1) * 10,
+    page * 10,
+  );
 
   return (
     <div className="page-stack">
@@ -338,25 +218,116 @@ export default function Courses() {
         </div>
       </div>
 
-      <section className="panel table-panel">
+      <section className="course-catalog-panel">
         {error ? (
-          <ErrorState
-            message={error}
-            onRetry={() => void load()}
-          />
+          <div className="panel">
+            <ErrorState
+              message={error}
+              onRetry={() => void load()}
+            />
+          </div>
         ) : !courses ? (
-          <LoadingState />
+          <div className="panel">
+            <LoadingState />
+          </div>
+        ) : visibleCourses.length ? (
+          <div className="course-admin-grid">
+            {visibleCourses.map((course) => {
+              const id = entityId(course);
+              const courseCounts = counts.get(id);
+              const revenue = revenueMap.get(id) ?? 0;
+              const discount = course.originalPrice > course.price
+                ? Math.round(
+                    ((course.originalPrice - course.price) /
+                      course.originalPrice) * 100,
+                  )
+                : 0;
+
+              return (
+                <article className="course-admin-card" key={id}>
+                  <div className="course-admin-media">
+                    {course.thumbnail ? (
+                      <img src={course.thumbnail} alt="" />
+                    ) : (
+                      <div className="course-admin-placeholder">
+                        {course.title.slice(0, 2).toUpperCase()}
+                      </div>
+                    )}
+
+                    <span className={`status ${course.status}`}>
+                      {course.status}
+                    </span>
+
+                    <div className="course-admin-flags">
+                      {course.featured ? <span>Featured</span> : null}
+                      {course.popular ? <span>Popular</span> : null}
+                    </div>
+                  </div>
+
+                  <div className="course-admin-body">
+                    <div className="course-admin-heading">
+                      <span>{course.category}</span>
+                      <h3>{course.title}</h3>
+                      <p>{course.instructor}</p>
+                    </div>
+
+                    <div className="course-admin-price">
+                      <strong>
+                        {course.price === 0
+                          ? 'Free'
+                          : `₹${course.price.toLocaleString('en-IN')}`}
+                      </strong>
+                      {discount > 0 ? (
+                        <>
+                          <del>₹{course.originalPrice.toLocaleString('en-IN')}</del>
+                          <span>{discount}% off</span>
+                        </>
+                      ) : null}
+                    </div>
+
+                    <div className="course-admin-metrics">
+                      <div><strong>{courseCounts?.students.size ?? 0}</strong><span>Students</span></div>
+                      <div><strong>{courseCounts?.enrollments ?? 0}</strong><span>Enrollments</span></div>
+                      <div><strong>₹{revenue.toLocaleString('en-IN')}</strong><span>Revenue</span></div>
+                    </div>
+
+                    <div className="course-admin-actions">
+                      <button
+                        disabled={busy === id}
+                        onClick={() => void toggle(course)}
+                      >
+                        {course.status === 'published' ? 'Unpublish' : 'Publish'}
+                      </button>
+                      <button
+                        className="primary-action"
+                        onClick={() =>
+                          navigate(`/courses/${id}/edit`, {
+                            state: { course },
+                          })
+                        }
+                      >
+                        Edit course
+                      </button>
+                      <button
+                        className="danger-action"
+                        aria-label={`Delete ${course.title}`}
+                        disabled={busy === id}
+                        onClick={() => void remove(course)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
         ) : (
-          <DataTable
-            columns={columns}
-            data={filtered.slice(
-              (page - 1) * 10,
-              page * 10,
-            )}
-            rowKey={entityId}
-            emptyTitle="No courses found"
-            emptyText="Create a course or try another search."
-          />
+          <div className="panel empty-state">
+            <div className="empty-icon">◇</div>
+            <h3>No courses found</h3>
+            <p>Create a course or try another search.</p>
+          </div>
         )}
       </section>
 
