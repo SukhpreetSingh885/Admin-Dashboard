@@ -1676,3 +1676,162 @@ body,
 .login-panel { background: #f6f7f8; }
 .remember-field input { accent-color: #243653; }
 .password-field button { color: #243653; }
+
+/* High-contrast typography pass. */
+:root {
+  --studio-ink: #111827;
+  --studio-muted: #475569;
+  --ink: #111827;
+  --muted: #475569;
+}
+
+body { color: #273449; }
+h1,
+h2,
+h3 { color: #111827; }
+
+.page-heading h1,
+.dashboard-intro h2,
+.settings-page-intro h2,
+.panel-head h2,
+.page-toolbar h2,
+.settings-card h2,
+.course-admin-heading h3 { color: #111827; }
+
+.page-heading p,
+.dashboard-intro p,
+.settings-page-intro p,
+.panel-head p,
+.page-toolbar p,
+.settings-card > p,
+.course-admin-heading p,
+.muted { color: #475569; }
+
+.eyebrow,
+.eyebrow.dark,
+.page-heading .eyebrow {
+  color: #526071;
+  font-weight: 850;
+}
+
+.sidebar { color: #334155; }
+.brand strong { color: #111827; }
+.brand span {
+  color: #5f6b7b;
+  font-weight: 750;
+}
+.workspace-label {
+  color: #647083;
+  font-weight: 850;
+}
+.sidebar nav a,
+.side-link {
+  color: #3f4b5e;
+  font-weight: 700;
+}
+.sidebar nav a .nav-icon { color: #536174; }
+.sidebar nav a:hover,
+.side-link:hover,
+.sidebar nav a.active { color: #111827; }
+.academy-card strong { color: #182133; }
+.academy-card small {
+  color: #526071;
+  font-weight: 600;
+}
+.side-link.logout { color: #4b586b; }
+
+.stat-copy span {
+  color: #475569;
+  font-weight: 750;
+}
+.stat-copy strong { color: #111827; }
+.stat-copy small {
+  color: #596579;
+  font-weight: 550;
+}
+.trend-up,
+.trend-up.trend-neutral {
+  color: #3f4b5e;
+  font-weight: 750;
+}
+
+th,
+.dashboard-table th {
+  color: #465367;
+  font-weight: 850;
+}
+td,
+.dashboard-table td { color: #334155; }
+.course-cell strong,
+.person-cell strong,
+.primary-cell strong,
+.dashboard-table td strong { color: #111827; }
+.course-cell span,
+.person-cell span,
+.primary-cell span { color: #526071; }
+
+.field > span,
+.course-picker > span,
+.settings-field > span {
+  color: #263348;
+  font-weight: 800;
+}
+.settings-field > small,
+.settings-toggle small {
+  color: #526071;
+  font-weight: 550;
+}
+.profile-settings-card dt { color: #475569; }
+.profile-settings-card dd { color: #111827; }
+.settings-saved-note { color: #3f4b5e; }
+
+.field input,
+.field textarea,
+.field select,
+.course-picker select,
+.toolbar-controls > input,
+.toolbar-controls > select,
+.panel-search input,
+.nav-search input,
+.settings-money-input input { color: #182133; }
+
+.field input::placeholder,
+.field textarea::placeholder,
+.panel-search input::placeholder,
+.nav-search input::placeholder,
+.toolbar-controls > input::placeholder {
+  color: #647083;
+  opacity: 1;
+}
+
+.compact-empty,
+.compact-empty span,
+.empty-state p,
+.loading-state p,
+.error-state p { color: #526071; }
+.compact-empty strong,
+.empty-state h3,
+.error-state h3 { color: #182133; }
+
+.activity-entry strong { color: #182133; }
+.activity-entry p,
+.activity-entry time { color: #526071; }
+.chart-axis { fill: #526071; font-weight: 650; }
+.chart-summary span,
+.chart-summary small { color: #475569; }
+
+.course-admin-metrics strong { color: #111827; }
+.course-admin-metrics span {
+  color: #526071;
+  font-weight: 600;
+}
+.course-admin-price del { color: #5f6b7b; }
+.pagination { color: #475569; }
+
+.login-message > p { color: #e0e4ea; }
+.login-feature strong { color: #ffffff; }
+.login-feature small { color: #d1d7df; }
+.login-visual-footer { color: #c5ccd6; }
+.login-form-wrap > p { color: #475569; }
+.remember-field { color: #334155; }
+.security-note { color: #526071 !important; }
