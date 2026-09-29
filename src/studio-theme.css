@@ -1835,3 +1835,150 @@ td,
 .login-form-wrap > p { color: #475569; }
 .remember-field { color: #334155; }
 .security-note { color: #526071 !important; }
+
+/* Login and password recovery */
+.login-options {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+}
+
+.forgot-password-link,
+.back-to-login,
+.recovery-secondary-action {
+  color: #243653;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.forgot-password-link:hover,
+.back-to-login:hover { text-decoration: underline; }
+
+.recovery-secondary-action {
+  justify-self: center;
+  padding: 4px;
+  border: 0;
+  background: transparent;
+}
+
+.recovery-secondary-action:hover { text-decoration: underline; }
+.recovery-secondary-action:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.recovery-overview {
+  max-width: 470px;
+  margin: 38px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 13px;
+  list-style: none;
+}
+
+.recovery-overview li {
+  min-height: 58px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #aeb7c5;
+  border: 1px solid #455166;
+  border-radius: 11px;
+}
+
+.recovery-overview li > span {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  display: grid;
+  place-items: center;
+  color: #d7dde6;
+  border: 1px solid #59657a;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.recovery-overview li.active {
+  color: #ffffff;
+  border-color: #777f8d;
+  background: #202b40;
+}
+
+.recovery-overview li.active > span {
+  color: #182133;
+  border-color: #d4b36d;
+  background: #d4b36d;
+}
+
+.recovery-overview strong,
+.recovery-overview small { display: block; }
+.recovery-overview strong { font-size: 12px; }
+.recovery-overview small { margin-top: 3px; color: #c1c8d2; font-size: 10px; }
+
+.recovery-form-wrap { position: relative; }
+.recovery-step-label {
+  position: absolute;
+  top: 22px;
+  right: 24px;
+  padding: 6px 9px;
+  color: #526071;
+  border: 1px solid #dfe3e8;
+  border-radius: 999px;
+  background: #f6f7f8;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.recovery-form-wrap > h2 { margin-right: 80px; }
+.recovery-form-wrap > p strong { color: #273449; overflow-wrap: anywhere; }
+.recovery-form-wrap form { display: grid; gap: 17px; margin-top: 28px; }
+
+.otp-input {
+  text-align: center;
+  letter-spacing: 0.55em;
+  font-size: 20px !important;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.password-requirements {
+  margin-top: -5px;
+  color: #526071;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.recovery-notice,
+.recovery-success {
+  padding: 10px 12px;
+  border: 1px solid #d8dde4;
+  border-radius: 9px;
+  color: #3f4b5e;
+  background: #f6f7f8;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.recovery-success {
+  color: #176247;
+  border-color: #c7e6d9;
+  background: #effaf5;
+}
+
+.back-to-login {
+  display: inline-flex;
+  margin-top: 22px;
+}
+
+@media (max-width: 780px) {
+  .recovery-step-label { top: 18px; right: 20px; }
+}
+
+@media (max-width: 420px) {
+  .recovery-step-label {
+    position: static;
+    width: fit-content;
+    margin: 0 0 18px auto;
+  }
+
+  .recovery-form-wrap > h2 { margin-right: 0; }
+}

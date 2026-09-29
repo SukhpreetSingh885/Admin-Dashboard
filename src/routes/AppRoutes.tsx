@@ -8,6 +8,7 @@ import EditCourse from '../pages/EditCourse';
 import Enrollments from '../pages/Enrollments';
 import Lessons from '../pages/Lessons';
 import Login from '../pages/Login';
+import ForgotPassword from '../pages/ForgotPassword';
 import Payments from '../pages/Payments';
 import Progress from '../pages/Progress';
 import Students from '../pages/Students';
@@ -19,6 +20,7 @@ export default function AppRoutes() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         <Route element={<ProtectedRoute />}>
           <Route element={<AdminLayout />}>

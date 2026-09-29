@@ -29,26 +29,28 @@ api.interceptors.response.use(
       axios.isAxiosError(error) &&
       error.response?.status === 401
     ) {
-      sessionStorage.removeItem(
-        TOKEN_KEY,
-      );
+      const isPublicAuthPage = [
+        '/login',
+        '/forgot-password',
+      ].includes(window.location.pathname);
 
-      sessionStorage.removeItem(
-        'viralstan_admin_user',
-      );
+      if (!isPublicAuthPage) {
+        sessionStorage.removeItem(
+          TOKEN_KEY,
+        );
 
-      localStorage.removeItem(
-        TOKEN_KEY,
-      );
+        sessionStorage.removeItem(
+          'viralstan_admin_user',
+        );
 
-      localStorage.removeItem(
-        'viralstan_admin_user',
-      );
+        localStorage.removeItem(
+          TOKEN_KEY,
+        );
 
-      if (
-        window.location.pathname !==
-        '/login'
-      ) {
+        localStorage.removeItem(
+          'viralstan_admin_user',
+        );
+
         window.location.assign(
           '/login',
         );
