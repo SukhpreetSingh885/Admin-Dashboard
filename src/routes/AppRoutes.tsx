@@ -15,6 +15,7 @@ import Students from '../pages/Students';
 import Settings from '../pages/Settings';
 import AdminSecurity from '../pages/AdminSecurity';
 import Withdrawals from '../pages/Withdrawals';
+import Notifications from '../pages/Notifications';
 export default function AppRoutes() {
   return (
     <BrowserRouter>
@@ -34,6 +35,7 @@ export default function AppRoutes() {
             <Route path="payments" element={<Payments />} />
             <Route path="withdrawals" element={<Withdrawals />} />
             <Route path="progress" element={<Progress />} />
+            <Route path="notifications" element={<Notifications />} />
             <Route path="settings" element={<Settings />} />
             <Route path="security" element={<AdminSecurity />} />
           </Route>

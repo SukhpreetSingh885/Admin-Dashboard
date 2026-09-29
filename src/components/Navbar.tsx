@@ -9,10 +9,7 @@ import {
   useNavigate,
 } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-import {
-  adminService,
-  type AdminNotification,
-} from '../services/admin.service';
+import { adminService } from '../services/admin.service';
 import ShellIcon from './ShellIcon';
 
 const titles: Record<string, [string, string]> = {
@@ -40,19 +37,15 @@ const titles: Record<string, [string, string]> = {
     'Progress',
     'Follow learning activity and completion.',
   ],
+  '/notifications': [
+    'Notifications',
+    'Review updates from across your academy.',
+  ],
   '/settings': [
     'Settings',
     'Your administrator workspace.',
   ],
 };
-
-const notificationTime = (value: string) =>
-  new Date(value).toLocaleString('en-IN', {
-    day: 'numeric',
-    month: 'short',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
 
 export default function Navbar({
   onMenu,
@@ -64,15 +57,8 @@ export default function Navbar({
   const { user, logout } = useAuth();
 
   const [search, setSearch] = useState('');
-  const [notificationsOpen, setNotificationsOpen] =
-    useState(false);
   const [profile, setProfile] = useState(false);
-
-  const [notificationItems, setNotificationItems] =
-    useState<AdminNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [notificationsLoading, setNotificationsLoading] =
-    useState(false);
 
   const [title, subtitle] =
     pathname === '/'
@@ -110,76 +96,34 @@ export default function Navbar({
     }
   };
 
-  const loadNotifications = async () => {
-    setNotificationsLoading(true);
-
-    try {
-      const result =
-        await adminService.notifications();
-
-      setNotificationItems(result);
-    } finally {
-      setNotificationsLoading(false);
-    }
-  };
-
   useEffect(() => {
     void loadUnreadCount();
+
+    const updateUnreadCount = (event: Event) => {
+      const count =
+        (event as CustomEvent<number>).detail;
+
+      if (Number.isFinite(count)) {
+        setUnreadCount(Math.max(0, count));
+      }
+    };
+
+    window.addEventListener(
+      'admin-notifications:unread',
+      updateUnreadCount,
+    );
+
+    return () => {
+      window.removeEventListener(
+        'admin-notifications:unread',
+        updateUnreadCount,
+      );
+    };
   }, []);
 
   const openNotifications = () => {
-    const nextOpen = !notificationsOpen;
-
-    setNotificationsOpen(nextOpen);
     setProfile(false);
-
-    if (nextOpen) {
-      void loadNotifications();
-    }
-  };
-
-  const markRead = async (
-    notification: AdminNotification,
-  ) => {
-    if (notification.read) {
-      return;
-    }
-
-    await adminService.markNotificationRead(
-      notification._id,
-    );
-
-    setNotificationItems((items) =>
-      items.map((item) =>
-        item._id === notification._id
-          ? {
-              ...item,
-              read: true,
-            }
-          : item,
-      ),
-    );
-
-    setUnreadCount((count) =>
-      Math.max(0, count - 1),
-    );
-  };
-
-  const markAllRead = async () => {
-    if (!unreadCount) {
-      return;
-    }
-
-    await adminService.markAllNotificationsRead();
-
-    setNotificationItems((items) =>
-      items.map((item) => ({
-        ...item,
-        read: true,
-      })),
-    );
-
-    setUnreadCount(0);
+    navigate('/notifications');
   };
 
   const submit = (event: FormEvent) => {
@@ -241,7 +185,6 @@ export default function Navbar({
                 ? `, ${unreadCount} unread`
                 : ''
             }`}
-            aria-expanded={notificationsOpen}
           >
             <ShellIcon name="bell" size={19} />
 
@@ -254,65 +197,6 @@ export default function Navbar({
             )}
           </button>
 
-          {notificationsOpen && (
-            <div className="header-popover notification-popover">
-              <div className="notification-popover-head">
-                <strong>Notifications</strong>
-
-                {unreadCount > 0 && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      void markAllRead()
-                    }
-                  >
-                    Mark all read
-                  </button>
-                )}
-              </div>
-
-              {notificationsLoading ? (
-                <p>Loading notifications…</p>
-              ) : notificationItems.length ? (
-                <div className="notification-list">
-                  {notificationItems.map(
-                    (notification) => (
-                      <button
-                        type="button"
-                        key={notification._id}
-                        className={`notification-item ${
-                          notification.read
-                            ? 'read'
-                            : 'unread'
-                        }`}
-                        onClick={() =>
-                          void markRead(notification)
-                        }
-                      >
-                        <strong>
-                          {notification.title}
-                        </strong>
-
-                        <span>
-                          {notification.message}
-                        </span>
-
-                        <small>
-                          {notificationTime(
-                            notification.createdAt,
-                          )}
-                        </small>
-                      </button>
-                    ),
-                  )}
-                </div>
-              ) : (
-                <p>
-                  No notifications are available.
-                </p>
-              )}
-            </div>
-          )}
         </div>
 
         <div className="header-popover-wrap">
@@ -320,7 +204,6 @@ export default function Navbar({
             className="profile-trigger"
             onClick={() => {
               setProfile((value) => !value);
-              setNotificationsOpen(false);
             }}
             aria-label="Admin profile menu"
             aria-expanded={profile}
