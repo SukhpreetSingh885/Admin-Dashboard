@@ -174,22 +174,45 @@ export default function CourseForm({
             placeholder="Instructor name"
           />
         </label>
+<label className="field">
+  <span>Category</span>
 
-        <label className="field">
-          <span>Category</span>
+  <select
+    required
+    value={form.category}
+    onChange={(e) =>
+      set(
+        'category',
+        e.target.value,
+      )
+    }
+  >
+    <option value="" disabled>
+      Select category
+    </option>
 
-          <input
-            required
-            value={form.category}
-            onChange={(e) =>
-              set(
-                'category',
-                e.target.value,
-              )
-            }
-            placeholder="e.g. Social Media"
-          />
-        </label>
+    <option value="Development">
+      Development
+    </option>
+
+    <option value="Design">
+      Design
+    </option>
+
+    <option value="Marketing">
+      Marketing
+    </option>
+
+    <option value="Business">
+      Business
+    </option>
+
+    <option value="AI">
+      AI
+    </option>
+  </select>
+</label>
+       
 
         <label className="field span-2">
           <span>Choose Image</span>

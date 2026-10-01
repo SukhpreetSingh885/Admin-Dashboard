@@ -5,6 +5,7 @@ import './dashboard.css';
 import './redesign.css';
 import './shell.css';
 import './studio-theme.css';
+import './responsive.css';
 import App from './App.tsx';
 
 createRoot(document.getElementById('root')!).render(

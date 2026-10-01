@@ -27,7 +27,7 @@ export default function Sidebar({ open, collapsed, onClose, onCollapse }: { open
   const initials = user?.name.split(' ').map((part) => part[0]).slice(0, 2).join('').toUpperCase() || 'VA';
 
   return <>
-    <aside className={`sidebar ${open ? 'open' : ''} ${collapsed ? 'collapsed' : ''}`}>
+    <aside id="admin-sidebar" className={`sidebar ${open ? 'open' : ''} ${collapsed ? 'collapsed' : ''}`}>
       <div className="brand">
         <img className="brand-mark" src={academyLogo} alt="Viralstan Academy" />
         <div className="brand-copy"><strong>Viralstan</strong><span>ACADEMY ADMIN</span></div>

@@ -48,8 +48,10 @@ const titles: Record<string, [string, string]> = {
 };
 
 export default function Navbar({
+  open,
   onMenu,
 }: {
+  open: boolean;
   onMenu: () => void;
 }) {
   const { pathname } = useLocation();
@@ -145,6 +147,8 @@ export default function Navbar({
           className="icon-button menu-button"
           onClick={onMenu}
           aria-label="Open navigation"
+          aria-controls="admin-sidebar"
+          aria-expanded={open}
         >
           <ShellIcon name="menu" size={20} />
         </button>
